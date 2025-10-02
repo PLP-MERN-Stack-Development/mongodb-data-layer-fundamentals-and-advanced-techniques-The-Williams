@@ -1,59 +1,149 @@
-# MongoDB Fundamentals - Week 1
+## PLP Bookstore – MongoDB Week 1 Assignment
+
+## Objective
+
+This project demonstrates the fundamentals of MongoDB:
+
+* Setting up a database and collections
+* Performing CRUD operations
+* Writing advanced queries with projection, sorting, and pagination
+* Using aggregation pipelines for data analysis
+* Creating indexes to optimize performance
+
+
+## Prerequisites
+
+Before running the project, make sure you have the following installed:
+
+* **Node.js** (v14 or above)
+* **npm** (comes with Node.js)
+* **MongoDB** (either:
+
+  * [Community Edition](https://www.mongodb.com/try/download/community) installed locally, OR
+  * A [MongoDB Atlas](https://www.mongodb.com/atlas) cluster)
+
+
+## Project Structure
+
+plp-bookstore/
+│
+├── insert_books.js   # Script to insert sample data into MongoDB
+├── queries.js        # MongoDB queries (CRUD, advanced, aggregation, indexing)
+├── README.md         # Documentation and setup instructions
+└── .env              # (Optional) stores your MongoDB connection string securely
 
 ## Setup Instructions
 
-Before you begin this assignment, please make sure you have the following installed:
-
-1. **MongoDB Community Edition** - [Installation Guide](https://www.mongodb.com/docs/manual/administration/install-community/)
-2. **MongoDB Shell (mongosh)** - This is included with MongoDB Community Edition
-3. **Node.js** - [Download here](https://nodejs.org/)
-
-### Node.js Package Setup
-
-Once you have Node.js installed, run the following commands in your assignment directory:
+### 1. Clone Repository
 
 ```bash
-# Initialize a package.json file
-npm init -y
-
-# Install the MongoDB Node.js driver
-npm install mongodb
+git clone <your-github-repo-url>
+cd plp-bookstore
 ```
 
-## Assignment Overview
+### 2. Install Dependencies
 
-This week focuses on MongoDB fundamentals including:
-- Creating and connecting to MongoDB databases
-- CRUD operations (Create, Read, Update, Delete)
-- MongoDB queries and filters
-- Aggregation pipelines
-- Indexing for performance
+This project uses the MongoDB Node.js driver and dotenv (optional, for environment variables).
 
-## Submission
+```bash
+npm install mongodb dotenv
+```
 
-Complete all the exercises in this assignment and push your code to GitHub using the provided GitHub Classroom link.
+### 3. Configure MongoDB Connection
 
-## Getting Started
+#### Option A: MongoDB Atlas (Recommended)
 
-1. Accept the GitHub Classroom assignment invitation
-2. Clone your personal repository that was created by GitHub Classroom
-3. Install MongoDB locally or set up a MongoDB Atlas account
-4. Run the provided `insert_books.js` script to populate your database
-5. Complete the tasks in the assignment document
+1. Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/atlas).
+2. Whitelist your IP and create a database user.
+3. Copy your **connection string** from Atlas (e.g.):
 
-## Files Included
+   ```
+   mongodb+srv://<username>:<password>@<cluster-url>/?retryWrites=true&w=majority
+   ```
+4. Create a `.env` file in the root of your project and add:
 
-- `Week1-Assignment.md`: Detailed assignment instructions
-- `insert_books.js`: Script to populate your MongoDB database with sample book data
+   ```
+   MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/?retryWrites=true&w=majority
+   ```
 
-## Requirements
+#### Option B: Local MongoDB
 
-- Node.js (v18 or higher)
-- MongoDB (local installation or Atlas account)
-- MongoDB Shell (mongosh) or MongoDB Compass
+If you installed MongoDB locally, your connection string will look like:
 
-## Resources
+```
+mongodb://127.0.0.1:27017
+```
 
-- [MongoDB Documentation](https://docs.mongodb.com/)
-- [MongoDB University](https://university.mongodb.com/)
-- [MongoDB Node.js Driver](https://mongodb.github.io/node-mongodb-native/) 
+## Running the Scripts
+
+### Step 1: Insert Sample Data
+
+Run the insert script to populate the `plp_bookstore` database with the `books` collection:
+
+```bash
+node insert_books.js
+```
+
+What happens:
+
+* Connects to your MongoDB cluster
+* Drops the `books` collection if it exists
+* Inserts the sample book documents
+* Prints the inserted books in the console
+
+
+### Step 2: Run Queries
+
+There are two ways to use the queries:
+
+#### Option A: Using MongoDB Shell (mongosh)
+
+1. Start the MongoDB shell:
+
+   ```bash
+   mongosh "<your-mongo-uri>"
+   ```
+2. Select the database:
+
+   ```js
+   use plp_bookstore
+   ```
+3. Copy-paste queries from **queries.js** into the shell.
+
+#### Option B: Using MongoDB Compass
+
+1. Open Compass and connect to your MongoDB instance (local or Atlas).
+2. Navigate to the `plp_bookstore` database → `books` collection.
+3. Paste queries from **queries.js** into the **Filter** or **Aggregation** tabs.
+
+
+## Example Queries
+
+* Find all Fiction books:
+
+  ```js
+  db.books.find({ genre: "Fiction" })
+  ```
+
+* Update the price of *1984*:
+
+  ```js
+  db.books.updateOne({ title: "1984" }, { $set: { price: 15.99 } })
+  ```
+
+* Average price of books by genre:
+
+  ```js
+  db.books.aggregate([
+    { $group: { _id: "$genre", avgPrice: { $avg: "$price" } } }
+  ])
+  ```
+
+## Expected Outcome
+
+* `plp_bookstore` database created with a `books` collection
+* At least 10 book documents inserted
+* Queries demonstrating CRUD, projection, sorting, and pagination working correctly
+* Aggregation pipelines returning grouped and summarized data
+* Indexes created and analyzed with `explain()`
+
